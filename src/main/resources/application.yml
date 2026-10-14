@@ -1,0 +1,31 @@
+
+spring:
+  application:
+    name: london-lens
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/london_lens
+    username: london_lens_app
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+server:
+  port: 8080
+
+info:
+  app:
+    name: London Lens
+    description: London travel and digital products platform
