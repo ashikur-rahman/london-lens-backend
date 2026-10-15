@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Products | London Lens</title>
+    <style>
+        body { margin: 0; padding: 32px 20px; font-family: Arial, sans-serif; background: #f5f7fb; color: #172033; }
+        main { max-width: 1100px; margin: auto; }
+        .top, .actions { display: flex; gap: 16px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .panel { background: white; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 20px 0; }
+        .muted { color: #64748b; }
+        .success { background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; }
+        a { color: #175cd3; }
+        .button { display: inline-block; background: #175cd3; color: white; padding: 10px 14px; text-decoration: none; border-radius: 6px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; min-width: 700px; border-collapse: collapse; }
+        th, td { padding: 13px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .status { background: #e2e8f0; border-radius: 20px; padding: 5px 9px; font-size: 12px; }
+        .active { background: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+<main>
+    <header class="top">
+        <div>
+            <h1>Product Management</h1>
+            <p class="muted">Manage your London Lens catalogue.</p>
+        </div>
+        <div class="actions">
+            <a th:href="@{/admin/dashboard}">Admin dashboard</a>
+            <a class="button" th:href="@{/admin/products/new}">+ Create product</a>
+        </div>
+    </header>
+
+    <p class="success" th:if="${successMessage}"
+       th:text="${successMessage}"></p>
+
+    <section class="panel">
+        <p>Total products: <strong th:text="${#lists.size(products)}">0</strong></p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.name}">Product name</td>
+                    <td th:text="${product.slug}">product-slug</td>
+                    <td th:text="${product.productType}">DIGITAL</td>
+                    <td>
+                        <span th:text="${product.currency}">GBP</span>
+                        <span th:text="${#numbers.formatDecimal(product.priceMinor / 100.0, 1, 2)}">5.99</span>
+                    </td>
+                    <td>
+                        <span class="status"
+                              th:classappend="${product.status == 'ACTIVE'} ? ' active' : ''"
+                              th:text="${product.status}">ACTIVE</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/products/{id}/edit(id=${product.id})}">Edit</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(products)}">
+                    <td colspan="6">No products found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

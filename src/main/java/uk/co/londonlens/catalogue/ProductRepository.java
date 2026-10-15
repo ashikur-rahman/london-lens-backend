@@ -8,10 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ProductRepository
         extends JpaRepository<Product, Long> {
 
+
     List<Product> findByStatusOrderByNameAsc(String status);
 
     Optional<Product> findBySlugAndStatus(
         String slug,
         String status
     );
+
+    boolean existsBySlug(String slug);
+
+    boolean existsBySlugAndIdNot(String slug, Long id);
 }

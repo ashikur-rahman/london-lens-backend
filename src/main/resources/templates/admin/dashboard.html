@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | London Lens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 48px auto;
+            padding: 0 20px;
+            background: #f5f7fb;
+            color: #172033;
+        }
+        header, .panel {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        h1 { margin-top: 0; }
+        .muted { color: #64748b; }
+        a { color: #175cd3; }
+        .links { display: flex; gap: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>London Lens Admin</h1>
+        <p class="muted">
+            Welcome to your administration dashboard.
+        </p>
+    </header>
+
+    <section class="panel">
+        <h2>Catalogue management</h2>
+        <p>
+            Your public catalogue currently provides active products
+            through the read-only API.
+        </p>
+        <p>
+            The next development task is to add secure product
+            creation, editing, publishing, and archiving.
+        </p>
+        <p>
+            <a th:href="@{/admin/products}">
+                Manage all products →
+            </a>
+        </p>
+        <div class="links">
+            <a th:href="@{/api/v1/products}">
+                View public product API
+            </a>
+            <a th:href="@{/}">
+                Visit homepage
+            </a>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Administration status</h2>
+        <p>Signed-in administrator area.</p>
+
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Sign out</button>
+        </form>
+    </section>
+</body>
+</html>

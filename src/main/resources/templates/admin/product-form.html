@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | London Lens'">Product form</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 20px;
+            background: #f5f7fb;
+            color: #172033;
+        }
+        form, .panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .field { margin-bottom: 18px; }
+        label { display: block; font-weight: bold; margin-bottom: 7px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font: inherit;
+        }
+        textarea { min-height: 110px; resize: vertical; }
+        .error { color: #b42318; font-size: 14px; margin-top: 6px; }
+        .hint { color: #64748b; font-size: 13px; }
+        button, .cancel {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 6px;
+            font: inherit;
+        }
+        button { background: #175cd3; color: white; border: 0; cursor: pointer; }
+        .cancel { color: #172033; background: #e2e8f0; text-decoration: none; }
+        .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <p><a th:href="@{/admin/products}">← Back to products</a></p>
+    <h1 th:text="${pageTitle}">Product form</h1>
+
+    <form method="post" th:action="${formAction}" th:object="${productForm}">
+        <div class="field">
+            <label for="name">Product name</label>
+            <input id="name" type="text" th:field="*{name}"
+                   maxlength="200" required>
+            <p class="error" th:if="${#fields.hasErrors('name')}"
+               th:errors="*{name}"></p>
+        </div>
+
+        <div class="field">
+            <label for="slug">Slug</label>
+            <input id="slug" type="text" th:field="*{slug}"
+                   maxlength="220" required>
+            <p class="hint">Example: hidden-london-walking-guide</p>
+            <p class="error" th:if="${#fields.hasErrors('slug')}"
+               th:errors="*{slug}"></p>
+        </div>
+
+        <div class="field">
+            <label for="shortDescription">Short description</label>
+            <input id="shortDescription" type="text"
+                   th:field="*{shortDescription}" maxlength="500">
+            <p class="error"
+               th:if="${#fields.hasErrors('shortDescription')}"
+               th:errors="*{shortDescription}"></p>
+        </div>
+
+        <div class="field">
+            <label for="description">Full description</label>
+            <textarea id="description" th:field="*{description}"
+                      maxlength="10000"></textarea>
+            <p class="error" th:if="${#fields.hasErrors('description')}"
+               th:errors="*{description}"></p>
+        </div>
+
+        <div class="field">
+            <label for="productType">Product type</label>
+            <select id="productType" th:field="*{productType}">
+                <option th:each="type : ${productTypes}"
+                        th:value="${type}" th:text="${type}"></option>
+            </select>
+            <p class="error" th:if="${#fields.hasErrors('productType')}"
+               th:errors="*{productType}"></p>
+        </div>
+
+        <div class="field">
+            <label for="priceMinor">Price in pence</label>
+            <input id="priceMinor" type="number" th:field="*{priceMinor}"
+                   min="0" step="1" required>
+            <p class="hint">For example, enter 599 for £5.99.</p>
+            <p class="error" th:if="${#fields.hasErrors('priceMinor')}"
+               th:errors="*{priceMinor}"></p>
+        </div>
+
+        <div class="field">
+            <label for="currency">Currency</label>
+            <input id="currency" type="text" th:field="*{currency}"
+                   minlength="3" maxlength="3" required>
+            <p class="hint">Use a three-letter code, such as GBP.</p>
+            <p class="error" th:if="${#fields.hasErrors('currency')}"
+               th:errors="*{currency}"></p>
+        </div>
+
+        <div class="field">
+            <label for="status">Status</label>
+            <select id="status" th:field="*{status}">
+                <option th:each="item : ${statuses}"
+                        th:value="${item}" th:text="${item}"></option>
+            </select>
+            <p class="hint">
+                Only ACTIVE products are visible in the public catalogue.
+            </p>
+            <p class="error" th:if="${#fields.hasErrors('status')}"
+               th:errors="*{status}"></p>
+        </div>
+
+        <div class="actions">
+            <button type="submit">Save product</button>
+            <a class="cancel" th:href="@{/admin/products}">Cancel</a>
+        </div>
+    </form>
+</body>
+</html>
