@@ -45,6 +45,7 @@
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Category</th>
                     <th>Slug</th>
                     <th>Type</th>
                     <th>Price</th>
@@ -55,6 +56,11 @@
                 <tbody>
                 <tr th:each="product : ${products}">
                     <td th:text="${product.name}">Product name</td>
+                    <td th:text="${product.categoryId != null
+                        ? categoryNames[product.categoryId]
+                        : 'Uncategorised'}">
+                        Uncategorised
+                    </td>
                     <td th:text="${product.slug}">product-slug</td>
                     <td th:text="${product.productType}">DIGITAL</td>
                     <td>

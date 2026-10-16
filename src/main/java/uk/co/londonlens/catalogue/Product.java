@@ -106,24 +106,26 @@ public class Product {
     }
 
     void updateAdminFields(
-        String name,
-        String slug,
-        String shortDescription,
-        String description,
-        String productType,
-        Long priceMinor,
-        String currency,
-        String status) {
+            Long categoryId,
+            String name,
+            String slug,
+            String shortDescription,
+            String description,
+            String productType,
+            Long priceMinor,
+            String currency,
+            String status) {
 
-    this.name = name;
-    this.slug = slug;
-    this.shortDescription = shortDescription;
-    this.description = description;
-    this.productType = productType;
-    this.priceMinor = priceMinor;
-    this.currency = currency;
-    this.status = status;
-}
+        this.categoryId = categoryId;
+        this.name = name;
+        this.slug = slug;
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.productType = productType;
+        this.priceMinor = priceMinor;
+        this.currency = currency;
+        this.status = status;
+    }
 
 
 }

@@ -14,9 +14,13 @@ public class ProductAdminService {
 
     private final ProductRepository repository;
 
-    public ProductAdminService(ProductRepository repository) {
+    public ProductAdminService(
+            ProductRepository repository,
+            CategoryRepository categoryRepository) {
         this.repository = repository;
+        this.categoryRepository = categoryRepository;
     }
+    private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
     public Product findById(Long id) {
@@ -35,6 +39,25 @@ public class ProductAdminService {
         applyForm(product, form, slug);
 
         return repository.save(product);
+    }
+
+    private void validateCategory(Long categoryId) {
+        if (categoryId == null) {
+            return;
+        }
+
+        boolean valid = categoryRepository.findById(categoryId)
+            .filter(Category::isActive)
+            .isPresent();
+
+        if (!valid) {
+            throw new InvalidCategoryException();
+        }
+    }
+
+    public static class InvalidCategoryException
+            extends RuntimeException {
+        private static final long serialVersionUID = 1L;
     }
 
     public Product update(Long id, ProductForm form) {
@@ -61,6 +84,7 @@ public class ProductAdminService {
             Product product, ProductForm form, String slug) {
 
         product.updateAdminFields(
+            form.getCategoryId(),
             form.getName().trim(),
             slug,
             blankToNull(form.getShortDescription()),

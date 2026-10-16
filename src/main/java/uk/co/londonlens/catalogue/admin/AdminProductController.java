@@ -21,18 +21,25 @@ import uk.co.londonlens.catalogue.ProductAdminService;
 import uk.co.londonlens.catalogue.ProductForm;
 import uk.co.londonlens.catalogue.ProductRepository;
 
+import java.util.stream.Collectors;
+import uk.co.londonlens.catalogue.Category;
+import uk.co.londonlens.catalogue.CategoryRepository;
+
 @Controller
 @RequestMapping("/admin/products")
 public class AdminProductController {
 
     private final ProductRepository productRepository;
     private final ProductAdminService productAdminService;
+    private final CategoryRepository categoryRepository;
 
     public AdminProductController(
             ProductRepository productRepository,
-            ProductAdminService productAdminService) {
+            ProductAdminService productAdminService,
+            CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productAdminService = productAdminService;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping
@@ -42,6 +49,12 @@ public class AdminProductController {
             productRepository.findAll(
                 Sort.by(Sort.Direction.ASC, "name")
             )
+        );
+
+        model.addAttribute(
+            "categoryNames",
+            categoryRepository.findAll().stream()
+                .collect(Collectors.toMap(Category::getId, Category::getName))
         );
 
         return "admin/products";
@@ -70,6 +83,11 @@ public class AdminProductController {
                     "slug",
                     "duplicate",
                     "That slug is already in use."
+                );
+                result.rejectValue(
+                    "categoryId",
+                    "invalid",
+                    "Choose an existing active category."
                 );
             }
         }
@@ -120,6 +138,12 @@ public class AdminProductController {
                     "duplicate",
                     "That slug is already in use."
                 );
+                result.rejectValue(
+                    "categoryId",
+                    "invalid",
+                    "Choose an existing active category."
+                );
+                
             }
         }
 
@@ -151,6 +175,10 @@ public class AdminProductController {
         model.addAttribute(
             "statuses",
             List.of("DRAFT", "ACTIVE", "ARCHIVED")
+        );
+        model.addAttribute(
+            "categories",
+            categoryRepository.findByActiveTrueOrderByNameAsc()
         );
     }
 }

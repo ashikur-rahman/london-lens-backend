@@ -6,8 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
 
 public class ProductForm {
+
+    @Positive(message = "Select a valid category.")
+    private Long categoryId;
 
     @NotBlank(message = "Product name is required.")
     @Size(max = 200, message = "Name must be at most 200 characters.")
@@ -59,7 +63,16 @@ public class ProductForm {
         form.setPriceMinor(product.getPriceMinor());
         form.setCurrency(product.getCurrency().trim());
         form.setStatus(product.getStatus());
+        form.setCategoryId(product.getCategoryId());
         return form;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() { return name; }
