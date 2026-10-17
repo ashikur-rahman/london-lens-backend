@@ -6,39 +6,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Products | London Lens</title>
     <style>
-        body { margin: 0; padding: 32px 20px; font-family: Arial, sans-serif; background: #f5f7fb; color: #172033; }
-        main { max-width: 1100px; margin: auto; }
-        .top, .actions { display: flex; gap: 16px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .panel { background: white; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 20px 0; }
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 32px 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        main { max-width: 1200px; margin: auto; }
+
+        .top, .actions, .filters, .pagination {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            background: white;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
         .muted { color: #64748b; }
-        .success { background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; }
         a { color: #175cd3; }
-        .button { display: inline-block; background: #175cd3; color: white; padding: 10px 14px; text-decoration: none; border-radius: 6px; }
+
+        .button, button {
+            display: inline-block;
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button, .primary {
+            background: #175cd3;
+            color: white;
+        }
+
+        .secondary {
+            background: #e2e8f0;
+            color: #172033;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        .filters input { flex: 1; min-width: 200px; }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; min-width: 700px; border-collapse: collapse; }
-        th, td { padding: 13px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        .status { background: #e2e8f0; border-radius: 20px; padding: 5px 9px; font-size: 12px; }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px 10px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th { color: #475569; font-size: 13px; }
+
+        .status {
+            display: inline-block;
+            background: #e2e8f0;
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-size: 12px;
+        }
+
         .active { background: #dcfce7; color: #166534; }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-group form { margin: 0; }
+
+        .pagination { margin-top: 20px; }
     </style>
 </head>
+
 <body>
 <main>
     <header class="top">
         <div>
             <h1>Product Management</h1>
-            <p class="muted">Manage your London Lens catalogue.</p>
+            <p class="muted">
+                Search, filter and manage London Lens products.
+            </p>
         </div>
+
         <div class="actions">
             <a th:href="@{/admin/dashboard}">Admin dashboard</a>
-            <a class="button" th:href="@{/admin/products/new}">+ Create product</a>
+            <a class="button" th:href="@{/admin/products/new}">
+                + Create product
+            </a>
         </div>
     </header>
 
-    <p class="success" th:if="${successMessage}"
+    <p class="success"
+       th:if="${successMessage}"
        th:text="${successMessage}"></p>
 
+    <p class="error"
+       th:if="${errorMessage}"
+       th:text="${errorMessage}"></p>
+
     <section class="panel">
-        <p>Total products: <strong th:text="${#lists.size(products)}">0</strong></p>
+        <form class="filters" method="get"
+              th:action="@{/admin/products}">
+
+            <input type="search"
+                   name="search"
+                   placeholder="Search name or slug"
+                   aria-label="Search products"
+                   th:value="${currentSearch}">
+
+            <select name="status" aria-label="Filter by status">
+                <option value=""
+                        th:selected="${currentStatus == ''}">
+                    All statuses
+                </option>
+
+                <option th:each="option : ${statuses}"
+                        th:value="${option}"
+                        th:text="${option}"
+                        th:selected="${currentStatus == option}">
+                </option>
+            </select>
+
+            <button class="primary" type="submit">Apply filters</button>
+            <a class="button secondary" th:href="@{/admin/products}">
+                Clear
+            </a>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="top">
+            <p>
+                Total matching products:
+                <strong th:text="${products.totalElements}">0</strong>
+            </p>
+
+            <p class="muted">
+                Page
+                <strong th:text="${products.totalPages == 0 ? 0 : products.number + 1}">1</strong>
+                of
+                <strong th:text="${products.totalPages}">1</strong>
+            </p>
+        </div>
 
         <div class="table-wrap">
             <table>
@@ -50,38 +201,87 @@
                     <th>Type</th>
                     <th>Price</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
+
                 <tbody>
-                <tr th:each="product : ${products}">
+                <tr th:each="product : ${products.content}">
                     <td th:text="${product.name}">Product name</td>
+
                     <td th:text="${product.categoryId != null
                         ? categoryNames[product.categoryId]
                         : 'Uncategorised'}">
                         Uncategorised
                     </td>
+
                     <td th:text="${product.slug}">product-slug</td>
                     <td th:text="${product.productType}">DIGITAL</td>
+
                     <td>
                         <span th:text="${product.currency}">GBP</span>
-                        <span th:text="${#numbers.formatDecimal(product.priceMinor / 100.0, 1, 2)}">5.99</span>
+                        <span th:text="${#numbers.formatDecimal(product.priceMinor / 100.0, 1, 2)}">
+                            5.99
+                        </span>
                     </td>
+
                     <td>
                         <span class="status"
                               th:classappend="${product.status == 'ACTIVE'} ? ' active' : ''"
-                              th:text="${product.status}">ACTIVE</span>
+                              th:text="${product.status}">
+                            ACTIVE
+                        </span>
                     </td>
+
                     <td>
-                        <a th:href="@{/admin/products/{id}/edit(id=${product.id})}">Edit</a>
+                        <div class="action-group">
+                            <a th:href="@{/admin/products/{id}/edit(id=${product.id})}">
+                                Edit
+                            </a>
+
+                            <form th:if="${product.status == 'DRAFT'}"
+                                  th:action="@{/admin/products/{id}/publish(id=${product.id})}"
+                                  method="post">
+                                <button class="primary" type="submit">
+                                    Publish
+                                </button>
+                            </form>
+
+                            <form th:if="${product.status != 'ARCHIVED'}"
+                                  th:action="@{/admin/products/{id}/archive(id=${product.id})}"
+                                  method="post">
+                                <button class="secondary" type="submit">
+                                    Archive
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(products)}">
-                    <td colspan="6">No products found.</td>
+
+                <tr th:if="${products.content.isEmpty()}">
+                    <td colspan="7">No products match these filters.</td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <nav class="pagination" aria-label="Product pages">
+            <a th:if="${products.hasPrevious()}"
+               th:href="@{/admin/products(page=${products.number - 1},search=${currentSearch},status=${currentStatus})}">
+                ← Previous
+            </a>
+            <span th:unless="${products.hasPrevious()}" class="muted">
+                ← Previous
+            </span>
+
+            <a th:if="${products.hasNext()}"
+               th:href="@{/admin/products(page=${products.number + 1},search=${currentSearch},status=${currentStatus})}">
+                Next →
+            </a>
+            <span th:unless="${products.hasNext()}" class="muted">
+                Next →
+            </span>
+        </nav>
     </section>
 </main>
 </body>
