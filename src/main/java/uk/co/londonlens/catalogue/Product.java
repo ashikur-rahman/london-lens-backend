@@ -57,6 +57,10 @@ public class Product {
         // Required by JPA
     }
 
+    void changeStatus(String status) {
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
     }

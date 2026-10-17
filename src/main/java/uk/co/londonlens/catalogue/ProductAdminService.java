@@ -36,9 +36,10 @@ public class ProductAdminService {
         ensureSlugAvailable(slug, null);
 
         Product product = new Product();
-        applyForm(product, form, slug);
+        applyForm(product, form, slug, "DRAFT");
 
         return repository.save(product);
+
     }
 
     private void validateCategory(Long categoryId) {
@@ -61,11 +62,15 @@ public class ProductAdminService {
     }
 
     public Product update(Long id, ProductForm form) {
+
+
         Product product = findById(id);
         String slug = normalise(form.getSlug());
 
+        validateCategory(form.getCategoryId());
         ensureSlugAvailable(slug, id);
-        applyForm(product, form, slug);
+
+        applyForm(product, form, slug, product.getStatus());
 
         return repository.save(product);
     }
@@ -81,7 +86,10 @@ public class ProductAdminService {
     }
 
     private void applyForm(
-            Product product, ProductForm form, String slug) {
+            Product product,
+            ProductForm form,
+            String slug,
+            String status) {
 
         product.updateAdminFields(
             form.getCategoryId(),
@@ -92,8 +100,40 @@ public class ProductAdminService {
             form.getProductType().toUpperCase(Locale.ROOT),
             form.getPriceMinor(),
             form.getCurrency().trim().toUpperCase(Locale.ROOT),
-            form.getStatus()
+            status
         );
+    }
+
+    public Product publish(Long id) {
+    Product product = findById(id);
+
+    if ("ARCHIVED".equals(product.getStatus())) {
+        throw new InvalidProductStateException(
+            "Archived products cannot be published."
+        );
+    }
+
+    product.changeStatus("ACTIVE");
+
+        return repository.save(product);
+    }
+
+    public Product archive(Long id) {
+        Product product = findById(id);
+
+        product.changeStatus("ARCHIVED");
+
+        return repository.save(product);
+    }
+
+    public static class InvalidProductStateException
+            extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+        public InvalidProductStateException(String message) {
+            super(message);
+        }
     }
 
     private String normalise(String value) {
